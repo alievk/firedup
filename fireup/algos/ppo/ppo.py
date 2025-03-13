@@ -324,7 +324,7 @@ def ppo(
         )
 
     start_time = time.time()
-    o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
+    o, r, d, ep_ret, ep_len = env.reset()[0], 0, False, 0, 0
 
     # Main loop: collect experience in env and update/log each epoch
     for epoch in range(epochs):
@@ -336,7 +336,7 @@ def ppo(
             buf.store(o, a.detach().numpy(), r, v_t.item(), logp_t.detach().numpy())
             logger.store(VVals=v_t.item())
 
-            o, r, d, _ = env.step(a.detach().numpy()[0])
+            o, r, d, _, _ = env.step(a.detach().numpy()[0])
             ep_ret += r
             ep_len += 1
 
@@ -356,7 +356,7 @@ def ppo(
                 if terminal:
                     # only save EpRet / EpLen if trajectory finished
                     logger.store(EpRet=ep_ret, EpLen=ep_len)
-                o, r, d, ep_ret, ep_len = env.reset(), 0, False, 0, 0
+                o, r, d, ep_ret, ep_len = env.reset()[0], 0, False, 0, 0
 
         # Save model
         if (epoch % save_freq == 0) or (epoch == epochs - 1):
